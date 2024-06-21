@@ -105,4 +105,4 @@ async function monitorPrice() {
 }
 
 // Schedule to send alerts every thirty seconds
-setInterval(monitorPrice, 3000);
+setInterval(monitorPrice, 30000);
