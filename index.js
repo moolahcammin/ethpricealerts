@@ -17,6 +17,9 @@ let prices = {
   twentyFourHoursAgo: null
 };
 
+// Store the start time
+const startTime = Date.now();
+
 // Function to get the current price of Ethereum
 async function getCurrentEthereumPrice() {
   try {
@@ -60,6 +63,15 @@ function calculatePercentageChange(newPrice, oldPrice) {
   return ((newPrice - oldPrice) / oldPrice) * 100;
 }
 
+// Function to format the elapsed time
+function getElapsedTime() {
+  const milliseconds = Date.now() - startTime;
+  const seconds = Math.floor(milliseconds / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  return `${hours} hours, ${minutes % 60} minutes, ${seconds % 60} seconds`;
+}
+
 // Main monitoring function
 async function monitorPrice() {
   const currentPrice = await getCurrentEthereumPrice();
@@ -84,7 +96,14 @@ async function monitorPrice() {
     sendTelegramAlert(message);
   }
   updatePrices(currentPrice);
+
+  // Include the elapsed time in the message
+  const elapsedTime = getElapsedTime();
+  const message = `Current Ethereum price: $${currentPrice}\n` +
+                  // ... (rest of your message) +
+                  `Code has been running for: ${elapsedTime}`;
+  sendTelegramAlert(message);
 }
 
 // Schedule to send alerts every thirty seconds
-setInterval(monitorPrice, 30000);
+setInterval(monitorPrice, 6000);
