@@ -75,6 +75,8 @@ function getElapsedTime() {
 // Main monitoring function
 async function monitorPrice() {
   const currentPrice = await getCurrentEthereumPrice();
+  updatePrices(currentPrice); // Update prices first to include the latest price
+
   if (prices.oneMinuteAgo !== null) {
     const oneMinuteChange = calculatePercentageChange(currentPrice, prices.oneMinuteAgo);
     const fiveMinuteChange = calculatePercentageChange(currentPrice, prices.fiveMinutesAgo);
@@ -84,6 +86,9 @@ async function monitorPrice() {
     const threeHourChange = calculatePercentageChange(currentPrice, prices.threeHoursAgo);
     const twelveHourChange = calculatePercentageChange(currentPrice, prices.twelveHoursAgo);
     const twentyFourHourChange = calculatePercentageChange(currentPrice, prices.twentyFourHoursAgo);
+    const elapsedTime = getElapsedTime(); // Get the elapsed time
+
+    // Combine all information into one message
     const message = `Current Ethereum price: $${currentPrice}\n` +
                     `Price change over the last minute: ${oneMinuteChange.toFixed(2)}%\n` +
                     `Price change over the last 5 minutes: ${fiveMinuteChange.toFixed(2)}%\n` +
@@ -92,18 +97,12 @@ async function monitorPrice() {
                     `Price change over the last 2 hours: ${twoHourChange.toFixed(2)}%\n` +
                     `Price change over the last 3 hours: ${threeHourChange.toFixed(2)}%\n` +
                     `Price change over the last 12 hours: ${twelveHourChange.toFixed(2)}%\n` +
-                    `Price change over the last 24 hours: ${twentyFourHourChange.toFixed(2)}%`;
-    sendTelegramAlert(message);
-  }
-  updatePrices(currentPrice);
+                    `Price change over the last 24 hours: ${twentyFourHourChange.toFixed(2)}%\n` +
+                    `Code has been running for: ${elapsedTime}`;
 
-  // Include the elapsed time in the message
-  const elapsedTime = getElapsedTime();
-  const message = `Current Ethereum price: $${currentPrice}\n` +
-                  // ... (rest of your message) +
-                  `Code has been running for: ${elapsedTime}`;
-  sendTelegramAlert(message);
+    sendTelegramAlert(message); // Send the combined message
+  }
 }
 
 // Schedule to send alerts every thirty seconds
-setInterval(monitorPrice, 6000);
+setInterval(monitorPrice, 3000);
